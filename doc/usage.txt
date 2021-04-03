@@ -1,0 +1,113 @@
+
+--- Input ---
+
+The Lambda function must be called with a JSON object that contains a string parameter named "board".
+This parameter must be a 9 ASCII character representation of the board where the string positions are
+as follows:
+
+	 0 | 1 | 2
+	---+---+---
+	 3 | 4 | 5
+	---+---+---
+	 6 | 7 | 8
+	 
+The use of an "X" or "x" character shall be used to denote an X-owned square, while "O" or "o" for
+an O-owned square.  All other characters shall be assumed to represent an empty space.
+
+Examples:
+
+										 - | - | X
+	{									---+---+---
+		"board" : "--XOO-XX-"	==>		 O | O | -			Example 1 input
+	}									---+---+---
+										 X | X | -
+	
+	===============================================
+	
+										 X | O | X
+	{									---+---+---
+		"board" : "XOXOO-X-X"	==>		 O | O | -			Example 2 input
+	}									---+---+---
+										 X | - | X
+										 
+The Lambda function determines which player shall move next based on the input board configuration.
+
+--- Input via gateway ---
+
+A request can be issued via POST to the following URL:
+
+	https://ivvjbf1off.execute-api.us-east-1.amazonaws.com/TicTacToe
+	
+The body must be a JSON object as described above.
+
+--- Return ---
+
+The return is a JSON object that shows the wins, losses, and draws for the current player for each
+open board position.  If the input board is an invalid board the results will not be realistic.
+
+The output JSON will present an array containing 9 objects called "moves", with each position in
+the array corresponding to a move in the similarly named square.  Each object in the array shall
+have a "xwins", "owins", and "draws" numeric value.
+
+The output JSON will also present an array named "wins" containing 0 or more numbers that
+indicate moves to take for an immediate player win.
+
+The output JSON will also present an array named "blocks" containing 0 or more numbers that
+indicate moves to take to block a win by the opponent.
+
+Examples:
+
+	Example 1 output
+	
+		{
+		    "moves" : [
+		    	{ "xwins" : 2, "owins" : 3, "draws" : 0 },
+		        { "xwins" : 2, "owins" : 1, "draws" : 2 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 1, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 4, "draws" : 2 }
+		    ],
+		    "wins" : [ 5 ],
+		    "blocks" : [ 8 ]
+		}
+	
+	Example 2 output
+
+		{
+		    "moves" : [ 
+		    	{ "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 1, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 1, "draws" : 0 },
+		        { "xwins" : 0, "owins" : 0, "draws" : 0 }
+		    ],
+		    "wins" : [ 5, 7 ],
+		    "blocks" : [ 5, 7 ]
+		}
+	
+--- Errors ---
+
+In the event of an error the output JSON shall contain two fields named "errormsg" 
+and "errorcode".  The error code field is described below, and the error message
+field is provided as a helpful decoder.
+
+No other fields are guaranteed to be present in the event of an error.
+
+Error codes:
+
+	  0		No error
+	  1		Invalid board size
+	  2		Unable to convert to JSON
+	  3		No arguments provided
+	253		JSON parsing error
+	254		Unknown instantiation error
+	255		Memory allocation error
+	
