@@ -1,5 +1,5 @@
 #
-# Makefile for CitrusGroveOneMile sample project
+# Makefile for TicTacToe sample project
 #
 # Copyright (c) 2021 Louis Gehrig. All rights reserved.
 #
