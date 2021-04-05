@@ -1,0 +1,35 @@
+
+//
+// JSON Bakers Game Board Representation
+//
+
+The Bakers Game board representation is as follows:
+
+	* The seed value used to construct the board (may be zero)
+	* An array of foundation value objects
+	* An array of the reserve cards
+	* An array of arrays for the rows and columns of strings for the cards
+	
+For example:
+
+	{
+		"seed_value" : 0,
+		"foundations" : [
+			{ "suit" : "club" , "value" : "3" },
+			{ "suit" : "diamond" , "value" : "A" },
+			{ "suit" : "heart" , "value" : "2" },
+			{ "suit" : "spade" , "value" : "A" }
+		],
+		"reserve" : [ "C5", "SK", "SJ", "" ],
+		"tableau" : [
+			[ "D8", "S5", "S6", "D6", "H0", "D0", "C0" ],
+			[ "C4", "D2", "CQ", "H9", "S8", "D7", "S7" ],
+			[ "H3", "C6", "HK", "HJ", "CK", "H8", "H7" ],
+			[ "SQ", "S3", "CJ", "D9", "S4", "",   "H6" ],
+			[ "HQ", "S9", "S2", "DK", "D5", "",   "H5" ],
+			[ "H4", "",   "C9", "DQ", "D4", "",   "" ],
+			[ "S0", "",   "C8", "DJ", "D3", "",   "" ],      
+			[ "",   "",   "C7",  "",  "",   "",   "" ]
+		]
+	}
+	
