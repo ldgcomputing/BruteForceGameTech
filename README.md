@@ -20,7 +20,7 @@ Play every move.  Employ exhaustive searches.  Let CPU
 cycles fall from the heavens - gather them, burn them,
 and rejoice.
 
-This is the GitHub repository for 
+This is the GitHub repository for **Brute Force Game Tech**!
 
 # See Also
 
