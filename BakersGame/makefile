@@ -32,18 +32,21 @@
 AR = ar
 CC = g++
 DEFAULT_TARGET = debug
-INCLUDES = -I Include
+INCLUDES = -I include -I /usr/local/include/node
+LIBS = -lpthread -ldl -lm
 TARGET ?= ${DEFAULT_TARGET}
 
 # Specific to target
 ifeq "$(TARGET)" "debug"
 	BIN = bin/debug
-	CC_OPTS = -Wall -DACTIVE_LOGGING
+	C_OPTS = -stdlib=libc++
+	CC_OPTS = -Wall -DACTIVE_LOGGING -std=gnu++1y -fno-rtti -fno-strict-aliasing -stdlib=libc++
 	LIB_SOLVER = bakersgamed.a
 	TARGET_FILE = bruteForce
 else
 	BIN = bin/release
-	CC_OPTS = -O3
+	C_OPTS = -stdlib=libc++
+	CC_OPTS = -O3 -fno-exceptions
 	LIB_SOLVER = bakersgame.a
 	TARGET_FILE = bruteForce
 endif
@@ -68,13 +71,16 @@ cleanall:
 	chmod 777 bin bin/debug bin/release
 
 ${TARGET_FILE} : ${LIB_SOLVER} ${BIN}/BruteForce.o
-	${CC} ${INCLUDES} ${CC_OPTS} -o ${TARGET_FILE} ${BIN}/BruteForce.o ${LIB_SOLVER}
+	${CC} ${INCLUDES} ${CC_OPTS} -o ${TARGET_FILE} ${BIN}/BruteForce.o ${LIB_SOLVER} ${LIBS}
 
-${BIN}/BruteForce.o: include/SolitaireBoard.h include/SolitaireSolver_BakersGameEasy.h include/SolitaireSolver_BakersGameStnd.h include/SolitaireSolver.h src/BruteForce.cpp
+${BIN}/BruteForce.o: include/nodeSupport.h include/SolitaireBoard.h include/SolitaireSolver_BakersGameEasy.h include/SolitaireSolver_BakersGameStnd.h include/SolitaireSolver.h include/solverSupport.h include/sqlite3.h src/BruteForce.cpp
 	${CC} -c ${INCLUDES} ${CC_OPTS} -o ${BIN}/BruteForce.o src/BruteForce.cpp
 
-${LIB_SOLVER}: ${BIN}/SolitaireBoard.o ${BIN}/SolitaireSolver_BakersGameEasy.o ${BIN}/SolitaireSolver_BakersGameStnd.o ${BIN}/SolitaireSolver.o
+${LIB_SOLVER}: ${BIN}/nodeSupport.o ${BIN}/SolitaireBoard.o ${BIN}/SolitaireSolver_BakersGameEasy.o ${BIN}/SolitaireSolver_BakersGameStnd.o ${BIN}/SolitaireSolver.o ${BIN}/solverSupport.o ${BIN}/sqlite3.o
 	cd ${BIN} && ${AR} -r -c ../../${LIB_SOLVER} SolitaireBoard.o SolitaireSolver_BakersGameEasy.o SolitaireSolver_BakersGameStnd.o SolitaireSolver.o
+
+${BIN}/nodeSupport.o: include/nodeSupport.h src/nodeSupport.cpp
+	${CC} -c ${INCLUDES} ${CC_OPTS} -o ${BIN}/nodeSupport.o src/nodeSupport.cpp
 
 ${BIN}/SolitaireBoard.o: include/SolitaireBoard.h src/SolitaireBoard.cpp
 	${CC} -c ${INCLUDES} ${CC_OPTS} -o ${BIN}/SolitaireBoard.o src/SolitaireBoard.cpp
@@ -88,3 +94,8 @@ ${BIN}/SolitaireSolver_BakersGameStnd.o: include/SolitaireBoard.h include/Solita
 ${BIN}/SolitaireSolver.o: include/SolitaireBoard.h include/SolitaireSolver.h src/SolitaireSolver.cpp
 	${CC} -c ${INCLUDES} ${CC_OPTS} -o ${BIN}/SolitaireSolver.o src/SolitaireSolver.cpp
 
+${BIN}/solverSupport.o: include/SolitaireBoard.h include/SolitaireSolver_BakersGameStnd.h src/SolitaireSolver_BakersGameStnd.cpp include/SolitaireSolver.h include/solverSupport.h src/solverSupport.cpp
+	${CC} -c ${INCLUDES} ${CC_OPTS} -o ${BIN}/solverSupport.o src/solverSupport.cpp
+
+${BIN}/sqlite3.o: include/sqlite3.h src/sqlite3.c
+	gcc -c ${INCLUDES} ${C_OPTS} -o ${BIN}/sqlite3.o src/sqlite3.c

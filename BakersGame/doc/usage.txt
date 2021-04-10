@@ -9,7 +9,7 @@ The Bakers Game board representation is as follows:
 	* An array of foundation value objects
 	* An array of the reserve cards
 	* An array of arrays for the rows and columns of strings for the cards
-	
+
 For example:
 
 	{
@@ -33,3 +33,180 @@ For example:
 		]
 	}
 	
+//
+// JSON Backers Game Solution Representation
+//
+
+The solution to a given Bakers Game is as follows:
+
+	* An array named "Moves" of objects of:
+	**	A "movefrom" string that is one of { "Tableau", "Wastepile", "Stockpile", "Foundation", "Reserve" }
+	**	A "fromcol" number, starting at zero, that is ->
+			From Tableau, counted from the left
+			From Reserve, counted from the left
+	**	A "fromrow" number, starting at zero, that is ->
+			From Tableau, starting from the top and incrementing downward
+			From Reserve, always zero
+	**	A "moveTo" string that is one of { "Tableau", "Wastepile", "Stockpile", "Foundation", "Reserve" }
+	**	A "tocol", starting at zero, that is ->
+			To Tableau, counted from the left
+			To Reserve, counted from the left
+			To Foundation, counted as CLUBS , DIAMONDS , HEARTS , SPADES
+	** A "torow", starting at zero, that is ->
+			To Tableau, starting from the top and incrementing downward
+			To Reserve, always zero
+			To Foundation, is the value of the card being moved
+			
+For example:
+	
+	{ "Moves" : [
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 5,  "moveto" : "Tableau", "tocol" : 6, "torow" : 5 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 6,  "moveto" : "Tableau", "tocol" : 3, "torow" : 6 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 5,  "moveto" : "Tableau", "tocol" : 3, "torow" : 7 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 4,  "moveto" : "Reserve", "tocol" : 3, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 3,  "moveto" : "Tableau", "tocol" : 7, "torow" : 5 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 2,  "moveto" : "Reserve", "tocol" : 2, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 1,  "moveto" : "Reserve", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 2, "torow" : 1 },
+		{  "movefrom" : "Tableau", "fromcol" : 6, "fromrow" : 6,  "moveto" : "Foundation", "tocol" : 2, "torow" : 2 },
+		{  "movefrom" : "Tableau", "fromcol" : 6, "fromrow" : 5,  "moveto" : "Foundation", "tocol" : 2, "torow" : 3 },
+		{  "movefrom" : "Tableau", "fromcol" : 6, "fromrow" : 4,  "moveto" : "Foundation", "tocol" : 3, "torow" : 1 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 6,  "moveto" : "Foundation", "tocol" : 3, "torow" : 2 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 5,  "moveto" : "Foundation", "tocol" : 3, "torow" : 3 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 4,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Reserve", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 6, "fromrow" : 3,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 6, "fromrow" : 2,  "moveto" : "Tableau", "tocol" : 4, "torow" : 4 },
+		{  "movefrom" : "Reserve", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 6, "torow" : 1 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Reserve", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 6,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 5,  "moveto" : "Tableau", "tocol" : 7, "torow" : 3 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 6,  "moveto" : "Tableau", "tocol" : 7, "torow" : 4 },
+		{  "movefrom" : "Reserve", "fromcol" : 2, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 5 },
+		{  "movefrom" : "Reserve", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 6 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 4,  "moveto" : "Tableau", "tocol" : 7, "torow" : 5 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 3,  "moveto" : "Reserve", "tocol" : 2, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 2,  "moveto" : "Foundation", "tocol" : 2, "torow" : 4 },
+		{  "movefrom" : "Reserve", "fromcol" : 3, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 2, "torow" : 5 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Reserve", "tocol" : 3, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 5,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 4,  "moveto" : "Foundation", "tocol" : 2, "torow" : 6 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 6,  "moveto" : "Foundation", "tocol" : 2, "torow" : 7 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 5,  "moveto" : "Foundation", "tocol" : 2, "torow" : 8 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 4,  "moveto" : "Foundation", "tocol" : 2, "torow" : 9 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 3,  "moveto" : "Foundation", "tocol" : 2, "torow" : 10 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 3,  "moveto" : "Foundation", "tocol" : 3, "torow" : 4 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 2,  "moveto" : "Tableau", "tocol" : 4, "torow" : 5 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 1,  "moveto" : "Foundation", "tocol" : 2, "torow" : 11 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 1,  "moveto" : "Reserve", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 2, "torow" : 12 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 2, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 2,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 7, "torow" : 1 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 1,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 1, "torow" : 1 },
+		{  "movefrom" : "Reserve", "fromcol" : 2, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 1, "torow" : 2 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 7, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 3, "fromrow" : 6,  "moveto" : "Tableau", "tocol" : 0, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 3, "fromrow" : 5,  "moveto" : "Tableau", "tocol" : 4, "torow" : 6 },
+		{  "movefrom" : "Tableau", "fromcol" : 3, "fromrow" : 4,  "moveto" : "Foundation", "tocol" : 1, "torow" : 3 },
+		{  "movefrom" : "Reserve", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 1, "torow" : 4 },
+		{  "movefrom" : "Tableau", "fromcol" : 3, "fromrow" : 3,  "moveto" : "Foundation", "tocol" : 3, "torow" : 5 },
+		{  "movefrom" : "Tableau", "fromcol" : 5, "fromrow" : 5,  "moveto" : "Tableau", "tocol" : 1, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 5, "fromrow" : 4,  "moveto" : "Tableau", "tocol" : 4, "torow" : 7 },
+		{  "movefrom" : "Tableau", "fromcol" : 5, "fromrow" : 3,  "moveto" : "Tableau", "tocol" : 1, "torow" : 1 },
+		{  "movefrom" : "Tableau", "fromcol" : 5, "fromrow" : 2,  "moveto" : "Tableau", "tocol" : 1, "torow" : 2 },
+		{  "movefrom" : "Tableau", "fromcol" : 5, "fromrow" : 1,  "moveto" : "Tableau", "tocol" : 1, "torow" : 3 },
+		{  "movefrom" : "Tableau", "fromcol" : 5, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 3, "torow" : 6 },
+		{  "movefrom" : "Tableau", "fromcol" : 3, "fromrow" : 2,  "moveto" : "Foundation", "tocol" : 3, "torow" : 7 },
+		{  "movefrom" : "Reserve", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 3, "torow" : 8 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 8,  "moveto" : "Foundation", "tocol" : 3, "torow" : 9 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 7,  "moveto" : "Foundation", "tocol" : 3, "torow" : 10 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 6,  "moveto" : "Foundation", "tocol" : 3, "torow" : 11 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 5,  "moveto" : "Foundation", "tocol" : 3, "torow" : 12 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 4,  "moveto" : "Foundation", "tocol" : 3, "torow" : 13 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 3,  "moveto" : "Tableau", "tocol" : 5, "torow" : 0 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 2,  "moveto" : "Foundation", "tocol" : 0, "torow" : 1 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 2,  "moveto" : "Foundation", "tocol" : 0, "torow" : 2 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 1,  "moveto" : "Foundation", "tocol" : 0, "torow" : 3 },
+		{  "movefrom" : "Tableau", "fromcol" : 0, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 0, "torow" : 4 },
+		{  "movefrom" : "Tableau", "fromcol" : 6, "fromrow" : 1,  "moveto" : "Tableau", "tocol" : 7, "torow" : 1 },
+		{  "movefrom" : "Tableau", "fromcol" : 6, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 0, "torow" : 5 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 3,  "moveto" : "Foundation", "tocol" : 0, "torow" : 6 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 2,  "moveto" : "Foundation", "tocol" : 0, "torow" : 7 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 1,  "moveto" : "Foundation", "tocol" : 0, "torow" : 8 },
+		{  "movefrom" : "Tableau", "fromcol" : 7, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 0, "torow" : 9 },
+		{  "movefrom" : "Tableau", "fromcol" : 3, "fromrow" : 1,  "moveto" : "Foundation", "tocol" : 0, "torow" : 10 },
+		{  "movefrom" : "Tableau", "fromcol" : 3, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 1, "torow" : 5 },
+		{  "movefrom" : "Tableau", "fromcol" : 5, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 1, "torow" : 6 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 2,  "moveto" : "Foundation", "tocol" : 0, "torow" : 11 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 1,  "moveto" : "Foundation", "tocol" : 0, "torow" : 12 },
+		{  "movefrom" : "Tableau", "fromcol" : 2, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 0, "torow" : 13 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 4,  "moveto" : "Foundation", "tocol" : 1, "torow" : 7 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 3,  "moveto" : "Foundation", "tocol" : 1, "torow" : 8 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 2,  "moveto" : "Foundation", "tocol" : 1, "torow" : 9 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 1,  "moveto" : "Foundation", "tocol" : 1, "torow" : 10 },
+		{  "movefrom" : "Tableau", "fromcol" : 1, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 1, "torow" : 11 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 1,  "moveto" : "Foundation", "tocol" : 1, "torow" : 12 },
+		{  "movefrom" : "Reserve", "fromcol" : 3, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 1, "torow" : 13 },
+		{  "movefrom" : "Tableau", "fromcol" : 4, "fromrow" : 0,  "moveto" : "Foundation", "tocol" : 2, "torow" : 13 }
+	]
+	}
+
+//
+// Request - Method_BF_BakersGameEasy_GetBoard
+//
+
+The method takes a single parameter - the game seed used to generate the board - and returns
+a board with a known valid solution.  The seed value may be different on the return, as if
+the input seed parameter is not recognized as properly valid it will be substituted with a
+randomly selected valid seed.
+
+The return is a JSON board representation of the board.
+
+//
+// Request - Method_BF_BakersGameEasy_SolveBoard
+//
+
+The method takes multiple parameters:
+
+	String						The type of game (currently one of { BAKERS_GAME , BAKERS_GAME_EASY })
+	Array of String				The foundation values, in the order CLUBS, DIAMONDS, HEARTS, SPADES
+	Array of String				The reserve cards
+	Array of Array of String	The tableau
+	
+The foundation and reserve arrays must be of length 4.  The tableau must be an array of arrays of size 8.
+Anything different will produce an error result.  There is a limit, however, to 32 rows in the tableau.
+
+The solution may either be provided by a database lookup or by the execution of a solver.  The solver
+is a time-limited solution so, while a solution may actually be available, it may not be found by the
+solver.
+
+The return is a JSON solution representation.
+
+--- Errors ---
+
+In the event of an error the output JSON shall contain two fields named "errormsg" 
+and "errorcode".  The error code field is described below, and the error message
+field is provided as a helpful decoder.
+
+No other fields are guaranteed to be present in the event of an error.

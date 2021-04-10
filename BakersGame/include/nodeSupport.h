@@ -34,8 +34,15 @@
 #ifndef INCLUDE_NODESUPPORT_H
 #define	INCLUDE_NODESUPPORT_H
 
-// Forward declares
-class CSolitaireBoard;
+// STL includes
+#include <string>
+#include <vector>
+
+// Node includes
+#include <node.h>
+
+// Project includes
+#include <SolitaireBoard.h>
 
 // Typedefs for the projects
 typedef unsigned int SEED_T;
@@ -45,6 +52,18 @@ typedef unsigned int SEED_T;
 //
 
 void loadValidSeedValues();
+
+//
+// Extract a string from an array
+//
+// @param isolate The V8 isolation object.
+// @param context The V8 context object.
+// @param arr The V8 array from which to extract the string
+// @param pos The position to extract
+// @return An std::string object of the value
+//
+
+std::string extractStringFromV8Array( v8::Isolate *isolate, v8::Local<v8::Context> context, v8::Local<v8::Array> arr, int pos);
 
 //
 // Validate a seed value
@@ -71,6 +90,34 @@ SEED_T validateSeedValue(SEED_T seedValue);
 // @return The number of bytes written to the buffer or, if negative, an error code.
 //
 
-int convertToJSON(SEED_T seedVal, CSolitaireBoard *pBoard, char *pBuffer, const size_t bufSize);
+int convertBoardToJSON(SEED_T seedVal, CSolitaireBoard *pBoard, char *pBuffer, const size_t bufSize);
+
+//
+// Convert a list of solution moves to a JSON representation
+//
+// See usage.txt for more details.
+//
+// @param lstMoves The moves to report
+// @param pBuffer The output buffer to write the JSON to.
+// @param bufSize The size of the output buffer.
+// @return The number of bytes written to the buffer or, if negative, an error code.
+//
+
+int convertMovesToJSON( LST_MOVES &lstMoves, char *pBuffer, const size_t bufSize);
+
+//
+// Convert a board representation to an actual board
+//
+// See usage.txt for more details.
+//
+// @param boardType The type of board to create;
+// @param lstFoundation A list of strings representing the highest foundation value, or blank for empty.
+// @param lstReserve A list of strings for each reserve space holding the string for the card, or blank for empty.
+// @param lstRows A list of lists of string data for each card, or blank for empty.
+// @return A constructed board.
+//
+
+CSolitaireBoard* convertStringsToBoard(const int boardType, std::vector<std::string> lstFoundation,
+		std::vector<std::string> lstReserve, std::vector<std::vector<std::string>> lstRows);
 
 #endif

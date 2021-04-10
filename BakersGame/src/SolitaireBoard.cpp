@@ -20,14 +20,10 @@
 // Project includes
 #include "SolitaireBoard.h"
 
+// Constants
+const char *MOVE_VALUES[] = { "Tableau", "Wastepile", "Stockpile", "Foundation", "Reserve", "Invalid" };
+
 // Sorting operators
-bool operator<(const struct s_card &left, const struct s_card &right) {
-	if (left.eSuit > right.eSuit)
-		return (false);
-	if (left.eSuit < right.eSuit)
-		return (true);
-	return (left.eValue < right.eValue);
-}
 bool operator<(const COMP_BOARD &left, const COMP_BOARD &right) {
 	return (memcmp(&left, &right, sizeof(COMP_BOARD)));
 }
@@ -37,9 +33,6 @@ bool operator<(const COMP_BOARD &left, const COMP_BOARD &right) {
 //
 
 void PrintMove(FILE *pOutput, const MOVE_T cTheMove) {
-
-	// Constants
-	const char *MOVE_VALUES[] = { "Tableau", "Wastepile", "Stockpile", "Foundation", "Reserve", "Invalid" };
 
 	// Validate input
 	if ((FILE*) 0x0 == pOutput)
@@ -51,6 +44,28 @@ void PrintMove(FILE *pOutput, const MOVE_T cTheMove) {
 	fprintf(pOutput, "%s ", MOVE_VALUES[cTheMove.eMoveTo]);
 	fprintf(pOutput, "col %d row %d", cTheMove.nToCol, cTheMove.nToRow);
 
+}
+
+CARD_T convertTextToCard(const char *pBuffer) {
+	CARD_T retValue; // default is an invalid card, so good there
+	if (((char*) 0x0 == pBuffer) || (0x0 == pBuffer[0]) || (0x0 == pBuffer[1]))
+		return (retValue);
+	switch (pBuffer[0]) {
+	case 'C':
+		retValue.eSuit = CS_CLUBS;
+		break;
+	case 'D':
+		retValue.eSuit = CS_DIAMONDS;
+		break;
+	case 'H':
+		retValue.eSuit = CS_HEARTS;
+		break;
+	case 'S':
+		retValue.eSuit = CS_SPADES;
+		break;
+	}
+	retValue.eValue = convertTextToCardValue(pBuffer + 1);
+	return (retValue);
 }
 
 bool convertCardToText(CARD_T card, char *pBuffer, const size_t bufSize) {
@@ -121,6 +136,58 @@ bool convertCardToText(CARD_T card, char *pBuffer, const size_t bufSize) {
 	return (true);
 }
 
+CARDVALUES_T convertTextToCardValue(const char *pBuffer) {
+	CARDVALUES_T retValue = CV_INVALID;
+	if ((char*) 0x0 == pBuffer) {
+		return (retValue);
+	}
+	switch (pBuffer[0]) {
+	case 0x0:
+		retValue = CV_EMPTY;
+		break;
+	case 'A':
+		retValue = CV_ACE;
+		break;
+	case '2':
+		retValue = CV_TWO;
+		break;
+	case '3':
+		retValue = CV_THREE;
+		break;
+	case '4':
+		retValue = CV_FOUR;
+		break;
+	case '5':
+		retValue = CV_FIVE;
+		break;
+	case '6':
+		retValue = CV_SIX;
+		break;
+	case '7':
+		retValue = CV_SEVEN;
+		break;
+	case '8':
+		retValue = CV_EIGHT;
+		break;
+	case '9':
+		retValue = CV_NINE;
+		break;
+	case '0':
+		retValue = CV_TEN;
+		break;
+	case 'J':
+		retValue = CV_JACK;
+		break;
+	case 'Q':
+		retValue = CV_QUEEN;
+		break;
+	case 'K':
+		retValue = CV_KING;
+		break;
+	}
+	return (retValue);
+}
+
 bool convertCardValueToText(CARDVALUES_T cardValue, char *pBuffer, const size_t bufSize) {
 	if ((char*) 0x0 == pBuffer)
 		return (false);
@@ -171,6 +238,23 @@ bool convertCardValueToText(CARDVALUES_T cardValue, char *pBuffer, const size_t 
 	}
 	pBuffer[1] = 0x0;
 	return (true);
+
+}
+
+SOLITAIRE_T convertTextToGameType(const char *gameTypeString) {
+
+	SOLITAIRE_T retValue = ST_INVALID;
+
+	// Dispatch
+	if ((const char*) 0x0 == gameTypeString)
+		retValue = ST_INVALID;
+	else if (0x0 == strcmp(gameTypeString, "ST_BAKERS_GAME_EASY"))
+		retValue = ST_BAKERS_GAME_EASY;
+	else if (0x0 == strcmp(gameTypeString, "ST_BAKERS_GAME"))
+		retValue = ST_BAKERS_GAME;
+
+	// And done
+	return (retValue);
 
 }
 
