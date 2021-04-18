@@ -46,7 +46,7 @@ ifeq "$(TARGET)" "debug"
 else
 	BIN = bin/release
 	C_OPTS = -stdlib=libc++ -O3
-	CC_OPTS = -O3 -std=gnu++1y -fno-rtti -fno-strict-aliasing -stdlib=libc++
+	CC_OPTS = -O3 -std=gnu++1y -fno-rtti -fno-strict-aliasing -stdlib=libc++ -DACTIVE_LOGGING 
 	LIB_SOLVER = bakersgame.a
 	TARGET_FILE = bruteForce
 endif

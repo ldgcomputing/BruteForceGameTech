@@ -106,4 +106,14 @@ int convertMovesToJSON( LST_MOVES &lstMoves, char *pBuffer, const size_t bufSize
 CSolitaireBoard* convertStringsToBoard(const int boardType, std::vector<std::string> lstFoundation,
 		std::vector<std::string> lstReserve, std::vector<std::vector<std::string>> lstRows);
 
+//
+// Validate that every card is present on the board
+//
+// @param pBoard The board to analyze
+// @return TRUE if every card is accounted for, FALSE otherwise
+//
+
+bool validateCardsAndBoard( const CSolitaireBoard *pBoard);
+
+
 #endif

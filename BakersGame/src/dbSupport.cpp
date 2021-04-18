@@ -112,7 +112,7 @@ void SolitaireDB::setupPreparedStatements() {
 
 	preparedStatements[STMT_EXTRACT_SOLUTION_DETAIL].eStatement = STMT_EXTRACT_SOLUTION_DETAIL;
 	preparedStatements[STMT_EXTRACT_SOLUTION_DETAIL].strStatement =
-			"select solutionOrder, moveFrom, fromCol, fromRow, moveTo, toCol, toRow from solutions_detail where solutionId = ? order by solutionOrder";
+			"select solutionOrder, moveFrom, fromCol, fromRow, moveTo, toCol, toRow from solutions_detail where solutionNumber = ? order by solutionOrder";
 
 }
 

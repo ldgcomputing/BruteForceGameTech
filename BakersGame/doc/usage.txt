@@ -1,5 +1,19 @@
 
 //
+// Memory requirements
+//
+
+The command line brute force program will require gigabytes of RAM.  The "make test" operation will require slightly under 4 GB
+of RAM to execute; some seed values may require even higher amounts.  These requirements can be lowered by altering the
+solver's configuration - see the "intelligence.md" file and the DEFAULT constants set in "BruteForce.cpp".
+
+The exported node function to solve, when the solution exists in the database, will require less than 100 MB of space.  And
+virtually no CPU - it's all simply reading from the bakersgame.db file.
+
+The exported node function to solve, when no solution already exists, will, with the current settings, also consume less than
+100 MB of memory.  But the CPU is much larger - a potential issue on constrained environments.
+
+//
 // JSON Bakers Game Board Representation
 //
 
@@ -184,7 +198,7 @@ randomly selected valid seed.
 The return is a JSON board representation of the board.
 
 //
-// Request - Method_BF_BakersGameEasy_SolveBoard
+// Request - Method_BF_BakersGame_SolveBoard
 //
 
 The method takes multiple parameters:
@@ -198,8 +212,8 @@ The foundation and reserve arrays must be of length 4.  The tableau must be an a
 Anything different will produce an error result.  There is a limit, however, to 32 rows in the tableau.
 
 The solution may either be provided by a database lookup or by the execution of a solver.  The solver
-is a time-limited solution so, while a solution may actually be available, it may not be found by the
-solver.
+is a time-limited and memory constrained solution so, while a solution may actually be available, it may
+not be found by the solver.  If there is no returned solutions then the moves array will simply be empty.
 
 The return is a JSON solution representation.
 

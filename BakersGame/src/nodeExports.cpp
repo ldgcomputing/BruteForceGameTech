@@ -157,17 +157,6 @@ void Method_BF_BakersGame_SolveBoard(const FunctionCallbackInfo<Value> &args) {
 		if (args.Length() < 4)
 			throw(5);
 
-		// Create a set to ensure all cards have eventually been seen
-		std::set<CARD_T> setCards;
-		for (int ics = CS_CLUBS; CS_INVALID > ics; ++ics) {
-			for (int icv = CV_ACE; CV_INVALID > icv; ++icv) {
-				CARDSUITS_T cs = (CARDSUITS_T) ics;
-				CARDVALUES_T cv = (CARDVALUES_T) icv;
-				CARD_T card(cs, cv);
-				setCards.insert(card);
-			}
-		}
-
 		// Has a game type been provided?
 		unsigned char inputType[100 + 1];
 		memset(inputType, 0x0, sizeof(inputType));
@@ -232,81 +221,11 @@ void Method_BF_BakersGame_SolveBoard(const FunctionCallbackInfo<Value> &args) {
 		if ((CSolitaireBoard*) 0x0 == pBoard)
 			throw(9);
 
-		//
-		// Check the validity of that board - every card must be present and only present once
-		//
-
-		CARD_T emptyCard;
-
-		// Check foundation
-		for (int nSuit = 0; CS_INVALID > nSuit; ++nSuit) {
-			CARDSUITS_T cs = (CARDSUITS_T) nSuit;
-			CARDVALUES_T cv = pBoard->GetFoundationCardValue(cs);
-			for (int nValue = CV_ACE; cv > nValue; ++nValue) {
-				CARDVALUES_T intCV = (CARDVALUES_T) nValue;
-				CARD_T fndCard(cs, intCV);
-				if ((emptyCard.eSuit == fndCard.eSuit) && (emptyCard.eValue == fndCard.eValue))
-					continue;
-				std::set<CARD_T>::iterator itrCard = setCards.find(fndCard);
-				if (setCards.end() == itrCard) {
-#ifdef	ACTIVE_LOGGING
-					char cardValue[100];
-					if (!convertCardToText(fndCard, cardValue, 99))
-						strcpy(cardValue, "**INVALID**");
-					fprintf( stderr, "Tried to delete card in foundation %s\n", cardValue);
-#endif
-					throw(10);
-				} else
-					setCards.erase(itrCard);
-			}
-		}
-
-		// Go through the reserve
-		for (int nRsv = 0; pBoard->NumReserveSpaces() > nRsv; ++nRsv) {
-			CARD_T rsvCard = pBoard->GetReserveCard(nRsv);
-			if ((emptyCard.eSuit == rsvCard.eSuit) && (emptyCard.eValue == rsvCard.eValue))
-				continue;
-			std::set<CARD_T>::iterator itrCard = setCards.find(rsvCard);
-			if (setCards.end() == itrCard) {
-#ifdef	ACTIVE_LOGGING
-				char cardValue[100];
-				if (!convertCardToText(rsvCard, cardValue, 99))
-					strcpy(cardValue, "**INVALID**");
-				fprintf( stderr, "Tried to delete card in reserve %s\n", cardValue);
-#endif
-				throw(10);
-			} else
-				setCards.erase(itrCard);
-		}
-
-		// Go through the tableau
-		for (int nRow = 0; pBoard->NumRows() > nRow; ++nRow) {
-			for (int nCol = 0; pBoard->NumCols() > nCol; ++nCol) {
-				CARD_T tblCard = pBoard->GetTableauCardAt(nCol, nRow);
-				if ((emptyCard.eSuit != tblCard.eSuit) && (emptyCard.eValue != tblCard.eValue)) {
-					std::set<CARD_T>::iterator itrCard = setCards.find(tblCard);
-					if (setCards.end() == itrCard) {
-#ifdef	ACTIVE_LOGGING
-						char cardValue[100];
-						if (!convertCardToText(tblCard, cardValue, 99))
-							strcpy(cardValue, "**INVALID**");
-						fprintf( stderr, "Tried to delete card in tableau %s at row %d col %d\n", cardValue, nRow,
-								nCol);
-#endif
-						throw(10);
-					} else
-						setCards.erase(itrCard);
-				}
-			} // endfor col
-		} // endfor row
-
-		// Should be no cards left
-		if (!setCards.empty()) {
-#ifdef ACTIVE_LOGGING
-			fprintf( stderr, "There are %lu cards remaining in the set\n", setCards.size());
-#endif
+		// Check the board validity
+		if( !validateCardsAndBoard( pBoard)) {
 			throw(10);
 		}
+
 
 		// Call for a solution
 		bool timeout = false;

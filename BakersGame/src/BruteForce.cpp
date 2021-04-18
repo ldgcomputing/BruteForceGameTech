@@ -41,8 +41,9 @@
 #include <dbSupport.h>
 
 // Constants
-static const int DEFAULT_BOARDS_TO_CHECK = 3000000;
-static const int DEFAULT_INTELLIGENCE = 15;
+static const int DEFAULT_BOARDS_TO_CHECK = 30000000;
+static const int DEFAULT_INTELLIGENCE = 18;
+static const int DEFAULT_MAX_STACK = 2500000;
 static const int DEFAULT_MAX_TIME = 900;
 static const int DEFAULT_NUM_BOARDS = 1000;
 static const char DEFAULT_OUTPUT_FILE_EASY[] = "validSeedsBakersGameEasy.txt";
@@ -56,7 +57,7 @@ static const SOLITAIRE_T DEFAULT_BOARD_TYPE = ST_BAKERS_GAME_EASY;
 
 void ShowUsage(const char progName[]) {
 
-	fprintf( stderr, "Usage: %s < board type > [ output filename ] [ starting seed ] [ number to run ]\r\n", progName);
+	fprintf( stderr, "Usage: %s < board type > [ output file ] [ starting seed ] [ number to run ]\r\n", progName);
 	fprintf( stderr, "Board type 1 = Easy\r\n");
 	fprintf( stderr, "Board type 2 = Standard\r\n");
 	fprintf( stderr, "Board type 3 = Test mode - EASY\r\n");
@@ -79,7 +80,7 @@ void ShowUsage(const char progName[]) {
 //
 
 bool generateSolution(CSolitaireBoard *pBoard, int numBoards = DEFAULT_BOARDS_TO_CHECK, int intelligence =
-		DEFAULT_INTELLIGENCE, int maxTime = DEFAULT_MAX_TIME) {
+		DEFAULT_INTELLIGENCE, int maxTime = DEFAULT_MAX_TIME, int maxStackSize = DEFAULT_MAX_STACK) {
 
 	// Variables
 	bool bSolutionFound = false;
@@ -91,6 +92,7 @@ bool generateSolution(CSolitaireBoard *pBoard, int numBoards = DEFAULT_BOARDS_TO
 	CSolitaireSolver *pSolver = CSolitaireSolverFactory::GetSolver(pBoard);
 	pSolver->SetBoardsToCheck(numBoards);
 	pSolver->SetIntelligence(intelligence);
+	pSolver->SetMaximumStackSize(maxStackSize);
 	pSolver->SetMaximumTime(maxTime);
 	if (pSolver->FindAnySolution()) {
 
@@ -122,6 +124,7 @@ int main(int argc, const char *argv[]) {
 
 	// Variables
 	bool bInvalidArgs = false;
+	char *pConversionBuffer = (char *) 0x0;
 	CSB_BakersGame *pBakersGameBoard = (CSB_BakersGame*) 0x0;
 	const char *pOutputFileName = (const char*) 0x0;
 	double dblRunTime;
@@ -136,6 +139,10 @@ int main(int argc, const char *argv[]) {
 
 	// Wrap it all
 	try {
+
+		// Allocate conversion buffer space
+		pConversionBuffer = new char [50000];
+		if( (char *) 0x0 == pConversionBuffer) throw( "Unable to allocate conversion space");
 
 		// Setup checks for ints
 		if (4 != sizeof(int))
@@ -257,6 +264,13 @@ int main(int argc, const char *argv[]) {
 				tNow = time((time_t*) 0x0);
 				dblRunTime = difftime(tNow, tStart);
 				printf("Failure to generate a solution for board %d in %f seconds\n", nRandom, dblRunTime);
+				if( 0 < convertBoardToJSON(nRandom, pBakersGameBoard, pConversionBuffer, 50000)) {
+					printf( "The board:\n\n%s\n\n", pConversionBuffer);
+				}
+				else {
+					printf( "Unable to convert board for display\n");
+				}
+
 			}
 
 			// Cleanup
@@ -300,6 +314,12 @@ int main(int argc, const char *argv[]) {
 		fprintf( stderr, "MAIN -> unknown exception caught") ;
 #endif
 		nRetCode = EXIT_FAILURE;
+	}
+
+	// Free resources
+	if( (char *) 0x0 != pConversionBuffer) {
+		delete [] pConversionBuffer;
+		pConversionBuffer = (char *) 0x0;
 	}
 
 	// And return
