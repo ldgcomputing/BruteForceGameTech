@@ -45,13 +45,19 @@ ifeq "$(TARGET)" "debug"
 	TARGET_FILE = bruteForce
 else
 	BIN = bin/release
-	C_OPTS = -stdlib=libc++
-	CC_OPTS = -O3 -fno-exceptions
+	C_OPTS = -stdlib=libc++ -O3
+	CC_OPTS = -O3 -std=gnu++1y -fno-rtti -fno-strict-aliasing -stdlib=libc++
 	LIB_SOLVER = bakersgame.a
 	TARGET_FILE = bruteForce
 endif
 
 all : ${TARGET_FILE}
+
+test : ${TARGET_FILE}
+	./${TARGET_FILE} 1 /tmp/blah.bin 100 5
+
+testalt : ${TARGET_FILE}
+	./${TARGET_FILE} 1 -showalt /tmp/blah.bin 1848153258 1
 
 lib : ${LIB_SOLVER}
 
@@ -76,8 +82,11 @@ ${TARGET_FILE} : ${LIB_SOLVER} ${BIN}/BruteForce.o
 ${BIN}/BruteForce.o: include/nodeSupport.h include/SolitaireBoard.h include/SolitaireSolver_BakersGameEasy.h include/SolitaireSolver_BakersGameStnd.h include/SolitaireSolver.h include/solverSupport.h include/sqlite3.h src/BruteForce.cpp
 	${CC} -c ${INCLUDES} ${CC_OPTS} -o ${BIN}/BruteForce.o src/BruteForce.cpp
 
-${LIB_SOLVER}: ${BIN}/nodeSupport.o ${BIN}/SolitaireBoard.o ${BIN}/SolitaireSolver_BakersGameEasy.o ${BIN}/SolitaireSolver_BakersGameStnd.o ${BIN}/SolitaireSolver.o ${BIN}/solverSupport.o ${BIN}/sqlite3.o
-	cd ${BIN} && ${AR} -r -c ../../${LIB_SOLVER} SolitaireBoard.o SolitaireSolver_BakersGameEasy.o SolitaireSolver_BakersGameStnd.o SolitaireSolver.o
+${LIB_SOLVER}: ${BIN}/dbSupport.o ${BIN}/nodeSupport.o ${BIN}/SolitaireBoard.o ${BIN}/SolitaireSolver_BakersGameEasy.o ${BIN}/SolitaireSolver_BakersGameStnd.o ${BIN}/SolitaireSolver.o ${BIN}/solverSupport.o ${BIN}/sqlite3.o
+	cd ${BIN} && ${AR} -r -c ../../${LIB_SOLVER} dbSupport.o nodeSupport.o SolitaireBoard.o SolitaireSolver_BakersGameEasy.o SolitaireSolver_BakersGameStnd.o SolitaireSolver.o solverSupport.o sqlite3.o
+
+${BIN}/dbSupport.o : include/dbSupport.h include/sqlite3.h src/dbSupport.cpp
+	${CC} -c ${INCLUDES} ${CC_OPTS} -o ${BIN}/dbSupport.o src/dbSupport.cpp
 
 ${BIN}/nodeSupport.o: include/nodeSupport.h src/nodeSupport.cpp
 	${CC} -c ${INCLUDES} ${CC_OPTS} -o ${BIN}/nodeSupport.o src/nodeSupport.cpp

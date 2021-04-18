@@ -51,7 +51,7 @@ The solution to a given Bakers Game is as follows:
 	**	A "tocol", starting at zero, that is ->
 			To Tableau, counted from the left
 			To Reserve, counted from the left
-			To Foundation, counted as CLUBS , DIAMONDS , HEARTS , SPADES
+			To Foundation, counted from the left
 	** A "torow", starting at zero, that is ->
 			To Tableau, starting from the top and incrementing downward
 			To Reserve, always zero

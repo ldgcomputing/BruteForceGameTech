@@ -38,9 +38,6 @@
 #include <string>
 #include <vector>
 
-// Node includes
-#include <node.h>
-
 // Project includes
 #include <SolitaireBoard.h>
 
@@ -54,29 +51,18 @@ typedef unsigned int SEED_T;
 void loadValidSeedValues();
 
 //
-// Extract a string from an array
-//
-// @param isolate The V8 isolation object.
-// @param context The V8 context object.
-// @param arr The V8 array from which to extract the string
-// @param pos The position to extract
-// @return An std::string object of the value
-//
-
-std::string extractStringFromV8Array( v8::Isolate *isolate, v8::Local<v8::Context> context, v8::Local<v8::Array> arr, int pos);
-
-//
 // Validate a seed value
 //
 // This function will check that the seed value parameter exists in the file
 // of input seed values.  If the seed value exists then it will be returned,
 // otherwise a random valid seed value will be returned in its place.
 //
+// @param gameType The type of game to check.
 // @param seedValue The value to check.
 // @return A valid seed value (may not be the original parameter)
 //
 
-SEED_T validateSeedValue(SEED_T seedValue);
+SEED_T validateSeedValue(SOLITAIRE_T gameType, SEED_T seedValue);
 
 //
 // Convert a board to a JSON representation

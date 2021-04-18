@@ -20,4 +20,4 @@ for( fndPos = 0 ; testBoard.foundations.length > fndPos; ++ fndPos) {
 
 // Solve the board
 console.log( "----------");
-console.log( addon.Method_BF_BakersGameEasy_SolveBoard( "ST_BAKERS_GAME_EASY", foundations, testBoard.reserve, testBoard.tableau));
+console.log( addon.Method_BF_BakersGame_SolveBoard( "ST_BAKERS_GAME_EASY", foundations, testBoard.reserve, testBoard.tableau));

@@ -89,16 +89,13 @@ struct s_card {
 		eSuit = CS_INVALID;
 		eValue = CV_INVALID;
 	}
-	;
 	s_card(const s_card &copy) :
 			eSuit(copy.eSuit), eValue(copy.eValue) {
 	}
-	; // { eSuit = copy.eSuit ; eValue = copy.eValue ; } ;
 	s_card(const CARDSUITS_T eS, CARDVALUES_T eV) {
 		eSuit = eS;
 		eValue = eV;
 	}
-	;
 
 	// Operators
 	bool operator<(const struct s_card &right) const {
@@ -111,11 +108,9 @@ struct s_card {
 	bool operator!=(const struct s_card &right) const {
 		return ((this->eSuit != right.eSuit) || (this->eValue != right.eValue));
 	}
-	;
 	bool operator==(const struct s_card &right) const {
 		return ((this->eSuit == right.eSuit) && (this->eValue == right.eValue));
 	}
-	;
 
 };
 typedef s_card CARD_T;
@@ -400,32 +395,36 @@ public:
 	virtual bool HasFoundationPiles() const {
 		return (true);
 	}
-	;
+
 	virtual bool HasStockPile() const {
 		return (false);
 	}
-	;
+
 	virtual bool HasWastePile() const {
 		return (false);
 	}
-	;
+
 	virtual bool IsPlayable() const {
 		return (m_bIsPlayable);
 	}
-	;
+
+	bool isEasyMode() const {
+		return (m_bModeEasy);
+	}
+
 	virtual bool IsWinner() const;
 	virtual int NumCols() const {
 		return (NUM_COLS_ALLOCATED);
 	}
-	;
+
 	virtual int NumReserveSpaces() const {
 		return (4);
 	}
-	;
+
 	virtual int NumRows() const {
 		return (NUM_ROWS_ALLOCATED - 1);
 	}
-	;
+
 	virtual CARD_T GetReserveCard(const int nCol) const;
 	virtual CARD_T GetTableauCardAt(const int nCol, const int nRow) const;
 	virtual CARDVALUES_T GetFoundationCardValue(const CARDSUITS_T eSuit) const;
@@ -478,6 +477,47 @@ private:
 
 	// Keep an invalid card available to prevent constant allocation of one
 	CARD_T m_cPrivateInvalidCard;
+
+};
+
+//
+// A Bakers Game board that can be modified.
+//
+
+class CSB_BakersGameModifiable: public CSB_BakersGame {
+
+public:
+
+	// Construction
+	CSB_BakersGameModifiable(const bool bModeEasy) :
+			CSB_BakersGame(bModeEasy) {
+		ClearBoard();
+		SetSolType(bModeEasy ? ST_BAKERS_GAME_EASY : ST_BAKERS_GAME);
+	}
+
+	// Destruction
+	virtual ~CSB_BakersGameModifiable() {
+
+	}
+
+	// Setters
+	void setFoundation(CARDSUITS_T suit, CARDVALUES_T value) {
+		m_acFoundationHighest[suit] = value;
+	}
+	void setReserveSpace(int space, CARD_T value) {
+		if ((0 <= space) && (CSB_BakersGame::NUM_RESV_ALLOCATED > space)) {
+			m_acReserve[space] = value;
+		}
+	}
+	void setTableau(int col, int row, CARD_T value) {
+		if ((0 <= col) && (CSB_BakersGame::NUM_COLS_ALLOCATED > col) && (0 <= row)
+				&& (CSB_BakersGame::NUM_ROWS_ALLOCATED > row)) {
+			m_acTableau[col][row] = value;
+		}
+	}
+	void setPlayable(const bool bPlayable) {
+		m_bIsPlayable = bPlayable;
+	}
 
 };
 

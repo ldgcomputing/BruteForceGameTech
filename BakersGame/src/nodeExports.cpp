@@ -39,6 +39,7 @@
 #include <SolitaireBoard.h>
 #include <nodeSupport.h>
 #include <solverSupport.h>
+#include <v8Support.h>
 
 // Global constants
 static const char *ERROR_MESSAGES[] = { "Not an error", // Value = 0
@@ -101,7 +102,7 @@ void Method_BF_BakersGameEasy_GetBoard(const FunctionCallbackInfo<Value> &args) 
 		}
 
 		// Make sure the seed value is valid - or pick a random one from the list
-		seedVal = validateSeedValue(seedVal);
+		seedVal = validateSeedValue(ST_BAKERS_GAME_EASY, seedVal);
 
 		// Create the board
 		CSB_BakersGame *pBoard = (CSB_BakersGame*) CSolitaireBoard::CreateBoard(ST_BAKERS_GAME_EASY);
@@ -132,7 +133,7 @@ void Method_BF_BakersGameEasy_GetBoard(const FunctionCallbackInfo<Value> &args) 
 
 }
 
-void Method_BF_BakersGameEasy_SolveBoard(const FunctionCallbackInfo<Value> &args) {
+void Method_BF_BakersGame_SolveBoard(const FunctionCallbackInfo<Value> &args) {
 
 	// Get the program arguments
 	Isolate *isolate = args.GetIsolate();
@@ -237,8 +238,6 @@ void Method_BF_BakersGameEasy_SolveBoard(const FunctionCallbackInfo<Value> &args
 
 		CARD_T emptyCard;
 
-#define	ACTIVE_LOGGING
-
 		// Check foundation
 		for (int nSuit = 0; CS_INVALID > nSuit; ++nSuit) {
 			CARDSUITS_T cs = (CARDSUITS_T) nSuit;
@@ -341,7 +340,7 @@ void Method_BF_BakersGameEasy_SolveBoard(const FunctionCallbackInfo<Value> &args
 
 void Initialize(Local<Object> exports) {
 	NODE_SET_METHOD(exports, "Method_BF_BakersGameEasy_GetBoard", Method_BF_BakersGameEasy_GetBoard);
-	NODE_SET_METHOD(exports, "Method_BF_BakersGameEasy_SolveBoard", Method_BF_BakersGameEasy_SolveBoard);
+	NODE_SET_METHOD(exports, "Method_BF_BakersGame_SolveBoard", Method_BF_BakersGame_SolveBoard);
 }
 
 NODE_MODULE(NODE_GYP_MODULE_NAME, Initialize)

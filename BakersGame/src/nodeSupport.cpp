@@ -47,48 +47,8 @@ typedef SET_SEEDS::iterator ITR_SEEDS;
 typedef std::pair<ITR_SEEDS, bool> INS_SEEDS;
 
 // Global variable - the set of all valid seed values
-static SET_SEEDS g_allValidSeeds;
-
-//
-// A Bakers Game board that can be modified.
-//
-
-class CSB_BakersGameModifiable: public CSB_BakersGame {
-
-public:
-
-	// Construction
-	CSB_BakersGameModifiable(const bool bModeEasy) :
-			CSB_BakersGame(bModeEasy) {
-		ClearBoard();
-		SetSolType( bModeEasy ? ST_BAKERS_GAME_EASY : ST_BAKERS_GAME);
-	}
-
-	// Destruction
-	virtual ~CSB_BakersGameModifiable() {
-
-	}
-
-	// Setters
-	void setFoundation(CARDSUITS_T suit, CARDVALUES_T value) {
-		m_acFoundationHighest[suit] = value;
-	}
-	void setReserveSpace(int space, CARD_T value) {
-		if ((0 <= space) && (CSB_BakersGame::NUM_RESV_ALLOCATED > space)) {
-			m_acReserve[space] = value;
-		}
-	}
-	void setTableau(int col, int row, CARD_T value) {
-		if ((0 <= col) && (CSB_BakersGame::NUM_COLS_ALLOCATED > col) && (0 <= row)
-				&& (CSB_BakersGame::NUM_ROWS_ALLOCATED > row)) {
-			m_acTableau[col][row] = value;
-		}
-	}
-	void setPlayable(const bool bPlayable) {
-		m_bIsPlayable = bPlayable;
-	}
-
-};
+static SET_SEEDS g_allValidSeedsEasy;
+static SET_SEEDS g_allValidSeedsStnd;
 
 //
 // Load the list of valid seed values into memory.
@@ -102,8 +62,8 @@ void loadValidSeedValues() {
 	// Variables
 	char inpLine[MAX_LINE_SIZE + 1];
 
-	// Open the file for processing
-	FILE *fInput = fopen("resources/validSeeds.txt", "r");
+	// Open the standard file for processing
+	FILE *fInput = fopen("resources/validSeedsBakersGame.txt", "r");
 	if ((FILE*) 0x0 != fInput) {
 
 		// While not at the EOF
@@ -114,7 +74,34 @@ void loadValidSeedValues() {
 			if ((char*) 0x0 != fgets(inpLine, MAX_LINE_SIZE, fInput)) {
 				SEED_T value;
 				if (1 == sscanf(inpLine, "%u", &value)) {
-					g_allValidSeeds.insert(value);
+					g_allValidSeedsEasy.insert(value);
+					g_allValidSeedsStnd.insert(value);
+				}
+			} else {
+				break; // caught an error
+			}
+
+		} // endwhile not EOF
+
+		// And close
+		fclose(fInput);
+		fInput = (FILE*) 0x0;
+
+	}
+
+	// Open the easy file for processing
+	fInput = fopen("resources/validSeedsBakersGameEasy.txt", "r");
+	if ((FILE*) 0x0 != fInput) {
+
+		// While not at the EOF
+		while (!feof(fInput)) {
+
+			// Read a line and convert it
+			memset(inpLine, 0x0, sizeof(inpLine));
+			if ((char*) 0x0 != fgets(inpLine, MAX_LINE_SIZE, fInput)) {
+				SEED_T value;
+				if (1 == sscanf(inpLine, "%u", &value)) {
+					g_allValidSeedsEasy.insert(value);
 				}
 			} else {
 				break; // caught an error
@@ -137,27 +124,55 @@ void loadValidSeedValues() {
 // of input seed values.  If the seed value exists then it will be returned,
 // otherwise a random valid seed value will be returned in its place.
 //
+// @param gameType The type of game to check.
 // @param seedValue The value to check.
-// @return A valid seed value (may not be the original parameter)
+// @return	A valid seed value (may not be the original parameter), or zero for
+//			a bad game type.
 //
 
-SEED_T validateSeedValue(SEED_T seedValue) {
+SEED_T validateSeedValue(SOLITAIRE_T gameType, SEED_T seedValue) {
 
 	// Has the set been loaded?
-	if (0x0 == g_allValidSeeds.size())
+	if (g_allValidSeedsEasy.empty())
 		loadValidSeedValues();
 
 	// Check to see if its in the set
 	SEED_T retValue = seedValue;
-	if (1 != g_allValidSeeds.count(seedValue)) {
+	switch (gameType) {
 
-		// Pick one at random then
-		srand(seedValue);
-		const int select = (rand() % g_allValidSeeds.size());
-		CITR_SEEDS citrSeed = g_allValidSeeds.cbegin();
-		for (int pos = 0; select > pos; ++pos, ++citrSeed)
-			;
-		retValue = *citrSeed;
+	case ST_BAKERS_GAME:
+
+		if (1 != g_allValidSeedsStnd.count(seedValue)) {
+
+			// Pick one at random then
+			srand(seedValue);
+			const int select = (rand() % g_allValidSeedsStnd.size());
+			CITR_SEEDS citrSeed = g_allValidSeedsStnd.cbegin();
+			for (int pos = 0; select > pos; ++pos, ++citrSeed)
+				;
+			retValue = *citrSeed;
+
+		}
+		break;
+
+	case ST_BAKERS_GAME_EASY:
+
+		if (1 != g_allValidSeedsEasy.count(seedValue)) {
+
+			// Pick one at random then
+			srand(seedValue);
+			const int select = (rand() % g_allValidSeedsEasy.size());
+			CITR_SEEDS citrSeed = g_allValidSeedsEasy.cbegin();
+			for (int pos = 0; select > pos; ++pos, ++citrSeed)
+				;
+			retValue = *citrSeed;
+
+		}
+		break;
+
+	default:
+		retValue = 0; // no good seed
+		break;
 
 	}
 
@@ -177,7 +192,7 @@ SEED_T validateSeedValue(SEED_T seedValue) {
 // @return The number of bytes written to the buffer or, if negative, an error code.
 //
 
-int convertMovesToJSON( LST_MOVES &lstMoves, char *pBuffer, const size_t bufSize) {
+int convertMovesToJSON(LST_MOVES &lstMoves, char *pBuffer, const size_t bufSize) {
 
 	// Constants
 	const int TRANSLATE_BUF_SIZE = 100;
@@ -190,42 +205,42 @@ int convertMovesToJSON( LST_MOVES &lstMoves, char *pBuffer, const size_t bufSize
 	sOutputJSON.append("{ \"Moves\" : [");
 
 	// Loop over the moves
-	for( CITR_MOVES itrMoves = lstMoves.begin(); lstMoves.end() != itrMoves; ++ itrMoves) {
+	for (CITR_MOVES itrMoves = lstMoves.begin(); lstMoves.end() != itrMoves; ++itrMoves) {
 
 		const MOVE_T &curMove = *itrMoves;
 
-		if( lstMoves.begin() != itrMoves) {
-			sOutputJSON.append( ",");
+		if (lstMoves.begin() != itrMoves) {
+			sOutputJSON.append(",");
 		}
-		sOutputJSON.append( "\n\t{ ");
+		sOutputJSON.append("\n\t{ ");
 
 		// Move from
-		sOutputJSON.append( " \"movefrom\" : \"");
-		sOutputJSON.append( MOVE_VALUES[curMove.eMoveFrom]);
-		sOutputJSON.append( "\", ");
+		sOutputJSON.append(" \"movefrom\" : \"");
+		sOutputJSON.append(MOVE_VALUES[curMove.eMoveFrom]);
+		sOutputJSON.append("\", ");
 
 		// Column & row
-		sOutputJSON.append( "\"fromcol\" : ");
-		sprintf( translateBuffer, "%d", curMove.nFromCol);
-		sOutputJSON.append( translateBuffer);
-		sOutputJSON.append( ", \"fromrow\" : ");
-		sprintf( translateBuffer, "%d", curMove.nFromRow);
-		sOutputJSON.append( translateBuffer);
-		sOutputJSON.append( ", ");
+		sOutputJSON.append("\"fromcol\" : ");
+		sprintf(translateBuffer, "%d", curMove.nFromCol);
+		sOutputJSON.append(translateBuffer);
+		sOutputJSON.append(", \"fromrow\" : ");
+		sprintf(translateBuffer, "%d", curMove.nFromRow);
+		sOutputJSON.append(translateBuffer);
+		sOutputJSON.append(", ");
 
 		// Move to
-		sOutputJSON.append( " \"moveto\" : \"");
-		sOutputJSON.append( MOVE_VALUES[curMove.eMoveTo]);
-		sOutputJSON.append( "\", ");
+		sOutputJSON.append(" \"moveto\" : \"");
+		sOutputJSON.append(MOVE_VALUES[curMove.eMoveTo]);
+		sOutputJSON.append("\", ");
 
 		// Column & row
-		sOutputJSON.append( "\"tocol\" : ");
-		sprintf( translateBuffer, "%d", curMove.nToCol);
-		sOutputJSON.append( translateBuffer);
-		sOutputJSON.append( ", \"torow\" : ");
-		sprintf( translateBuffer, "%d", curMove.nToRow);
-		sOutputJSON.append( translateBuffer);
-		sOutputJSON.append( " }");
+		sOutputJSON.append("\"tocol\" : ");
+		sprintf(translateBuffer, "%d", curMove.nToCol);
+		sOutputJSON.append(translateBuffer);
+		sOutputJSON.append(", \"torow\" : ");
+		sprintf(translateBuffer, "%d", curMove.nToRow);
+		sOutputJSON.append(translateBuffer);
+		sOutputJSON.append(" }");
 
 	}
 
@@ -498,35 +513,3 @@ CSolitaireBoard* convertStringsToBoard(const int boardType, std::vector<std::str
 
 }
 
-//
-// Extract a string from an array
-//
-// @param isolate The V8 isolation object.
-// @param context The V8 context object.
-// @param arr The V8 array from which to extract the string
-// @param pos The position to extract
-// @return An std::string object of the value, or a blank string
-//
-
-std::string extractStringFromV8Array(v8::Isolate *isolate, v8::Local<v8::Context> context, v8::Local<v8::Array> arr,
-		int pos) {
-
-	// Empty value
-	std::string retValue("");  // @suppress("Invalid arguments")
-
-	// Convert
-	v8::Local<v8::Value> emptyValue;
-	v8::MaybeLocal<v8::Value> mlv = arr->Get(context, pos); // @suppress("Invalid arguments")
-	if (!mlv.IsEmpty()) {
-		v8::Local<v8::Value> lv = mlv.FromMaybe(emptyValue);
-		v8::Local<v8::String> s = v8::Local<v8::String>::Cast(lv);
-		unsigned char value[100];
-		memset(value, 0x0, sizeof(value));
-		s->WriteOneByte(isolate, value, 0, 99, v8::String::NO_OPTIONS);
-		retValue = (const char *) value;
-	}
-
-	// And done
-	return (retValue);
-
-}
